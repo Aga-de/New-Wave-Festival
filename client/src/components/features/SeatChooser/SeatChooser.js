@@ -1,14 +1,19 @@
 import React from 'react';
 import { Button, Progress, Alert } from 'reactstrap';
+import { io } from "socket.io-client";
+
 
 import './SeatChooser.scss';
 
 class SeatChooser extends React.Component {
   
   componentDidMount() {
-    const { loadSeats } = this.props;
+    const { loadSeats, loadSeatsData } = this.props;
+    this.socket = io((process.env.NODE_ENV === 'production') ? '' : 'http://localhost:8000/');
+    this.socket.on('seatsUpdated', seats => {
+      loadSeatsData(seats);
+    });
     loadSeats();
-    this.update = setInterval(() => loadSeats(), 120000);
   }
 
   componentWillUnmount() {
